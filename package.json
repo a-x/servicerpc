@@ -1,0 +1,39 @@
+{
+    "name": "ax.jsonrpc2.connect",
+    "description": "JSON-RPC 2.0 connect middleware",
+    "version": "0.10.1",
+    "private": true,
+    "author": {
+        "name": "Ax",
+        "email": "ax@ax.ax"
+    },
+    "contributors": [{
+        "name": "Ax",
+        "email": "ax@ax.ax"
+    }],
+    "dependencies": {
+         "ax.jsonrpc2": "git+ssh://git@bitbucket.org:a_x/jsonrpc2.git#master"
+    },
+    "devDependencies": {
+        "vows": "*"
+    },
+    "publishConfig": {
+        "tag": "0.10.1"
+    },
+    "keywords": ["json", "rpc", "connect"],
+    "repository": {
+        "type": "git",
+        "url": "https://a_x@bitbucket.org/a_x/connect-jsonrpc2.git"
+    },
+    "main": "index",
+    "scripts": {
+        "prepublish": "npm prune",
+        "test": "node ./test/jsonrpc2.connect.test.js"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "readme": "JSON-RPC 2.0 connect middleware",
+    "_id": "ax.jsonrpc2.connect@0.10.1",
+    "_from": "ax.jsonrpc2.connect"
+}
