@@ -33,7 +33,6 @@ connect(
 //    , connect.bodyParser()
     , connect.query({maxKeys: 5})
     , function(req, res, next) {
-        console.log('!', (req.body), req.url)
         if (req.url.indexOf('/service') === 0)
             rpc(req, res, next)
         else    
