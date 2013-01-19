@@ -27,9 +27,9 @@ connect(
     , connect.logger({ immediate: true, format: 'dev' })
     , connect.favicon()
     , connect.static(__dirname + '/public', { maxAge: 0 })
-//    , connect.json() //strict:false, 
+    , connect.json() //strict:false, 
 //    , connect.urlencoded()
-//    , connect.multipart()
+    , connect.multipart()
 //    , connect.bodyParser()
     , connect.query({maxKeys: 5})
     , function(req, res, next) {
