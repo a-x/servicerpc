@@ -16,7 +16,8 @@
     },
     "devDependencies": {
         "vows": "*",
-        "connect" : ">=2.7.2"
+        "connect" : ">= 2.7.2", 
+        "express" : ">= 3.0.2"
     },
     "publishConfig": {
         "tag": "0.10.1"

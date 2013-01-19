@@ -3,20 +3,7 @@ var connect = require('connect'),
 
 
 // $ curl -i http://localhost:3000/
-var service = {
-    add: function(a, b, fn) {
-        fn(null, +a + (+b));
-    },
-    sub: function(a, b, fn) {
-        fn(null, +a - b);
-    },
-    max: function(a, b, fn) {
-        fn(null, a > b ? a : b);
-    },
-    get: function(fn) {
-        fn(null, 'ok');
-    }
-};
+var service = service = require('./service.test.js');
 
 var rpc = jsonrpc(service);
 
