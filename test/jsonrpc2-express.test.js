@@ -1,12 +1,14 @@
 #!/bin/env node
 
 var http = require('http'),
+    util = require('util'),
     express = require('express'),
     app = express(),
     cluster = require('cluster'),
     service = require('./service.test.js'),
     jsonrpc = require('../lib/jsonrpc2-connect'),
-    numCPUs = 2, /*require('os').cpus().length*/
+    numCPUs = 1,
+    /*require('os').cpus().length*/
     PORT = process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080,
     HOST = process.env.OPENSHIFT_INTERNAL_IP || process.env.IP || '127.0.0.1'
 
@@ -34,6 +36,47 @@ app.configure('development', function() {
 
 app.all('/service', jsonrpc(service));
 
+var test = function() {
+    var options = {
+        hostname: 'jsonrpc2-connect.ax.c9.io',
+        port: 80,
+        method: 'POST',
+        path: '/service',
+        headers : {
+            "Content-Type" : "application/json"
+        }
+    };
+
+    var req = http.request(options, function(res) {
+//        console.log('STATUS: ' + res.statusCode);
+//        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8'); 
+        res.on('data', function(chunk) {
+            console.log('BODY: ' + chunk);
+        });
+    });
+
+    req.on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    // write data to request body
+    req.write('{"id":1,"jsonrpc":"2.0","method":"get"}');
+    req.end();
+    
+    http.get("http://jsonrpc2-connect.ax.c9.io/service?id=1&params=10&params=3&method=add&jsonrpc=2.0", function(res) {
+//        console.log('STATUS: ' + res.statusCode);
+//        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8'); 
+        res.on('data', function(chunk) {
+            console.log('BODY: ' + chunk);
+        });
+    }).on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+    console.log(process.memoryUsage());
+    process.nextTick(test);
+}
 
 if (cluster.isMaster) {
     // Fork workers.
@@ -46,11 +89,12 @@ if (cluster.isMaster) {
     });
 }
 else {
-    // Workers can share any TCP connection
+    // Workers can share any TCP connectionf
     // In this case its a HTTP server
     http.createServer(app).listen(PORT, HOST, function() {
         console.log("Express server(%d) listening on %s:%d", process.pid, HOST, PORT);
     });
+    setTimeout(test, 1000);        
 }
 
 //var options = {
