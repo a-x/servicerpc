@@ -15,9 +15,10 @@
          "ax.jsonrpc2": "git+ssh://git@bitbucket.org:a_x/jsonrpc2.git#master"
     },
     "devDependencies": {
-        "vows": "*",
+        "vows"    : "*",
         "connect" : ">= 2.7.2", 
-        "express" : ">= 3.0.2"
+        "express" : ">= 3.0.2",
+        "sockjs"  : "*"
     },
     "publishConfig": {
         "tag": "0.10.1"

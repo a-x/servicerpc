@@ -7,6 +7,7 @@ var http = require('http'),
     cluster = require('cluster'),
     service = require('./service.test.js'),
     jsonrpc = require('../lib/jsonrpc2-connect'),
+    sockrpc = require('../lib/jsonrpc2-sockjs'),
     numCPUs = 1,
     /*require('os').cpus().length*/
     PORT = process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080,
@@ -34,7 +35,11 @@ app.configure('development', function() {
     app.use(express.errorHandler());
 });
 
-app.all('/service', jsonrpc(service));
+var rpc = jsonrpc(service);
+app.all('/service', function (req, res, next) {
+    console.log(process.memoryUsage());
+    rpc(req, res, next);
+});
 
 var test = function() {
     var options = {
@@ -91,10 +96,12 @@ if (cluster.isMaster) {
 else {
     // Workers can share any TCP connectionf
     // In this case its a HTTP server
-    http.createServer(app).listen(PORT, HOST, function() {
+    var server = http.createServer(app);;
+    sockrpc(service).installHandlers(server, {prefix:'/sockjs'});
+    server.listen(PORT, HOST, function() {
         console.log("Express server(%d) listening on %s:%d", process.pid, HOST, PORT);
     });
-    setTimeout(test, 1000);        
+//    setTimeout(test, 1000);        
 }
 
 //var options = {
