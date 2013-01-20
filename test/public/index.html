@@ -2,6 +2,7 @@
 <html><head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <script src="servicerpc.js"></script>
     <style>
       .box {
           width: 300px;
@@ -39,6 +40,11 @@
       <div></div>
       <form><input autocomplete="off" value="Type here..."></input></form>
     </div>
+    <div id="sock" class="box">'
+      <div></div>
+      <form><input autocomplete="off" value="Type here..."></input></form>
+        <input type="button" name="jsonrpc" placeholder="jsonrpc" value="2.0" />
+    </div>
 
     <script>
         var sockjs_url = '/sockjs';
@@ -57,8 +63,8 @@
         };
 
         sockjs.onopen    = function()  {print('[*] open', sockjs.protocol);
-            sockjs.send({id:1, method:'get', jsonrpc:'2.0'});
-            sockjs.send('{"id":1,"jsonrpc":"2.0","method":"get"}');
+//            sockjs.send({id:1, method:'get', jsonrpc:'2.0'});
+//            sockjs.send('{"id":1,"jsonrpc":"2.0","method":"get"}');
         };
         sockjs.onmessage = function(e) {print('[.] message', e.data); };
         sockjs.onclose   = function()  {print('[*] close');};
@@ -74,6 +80,23 @@
             return false;
         });
 
+//        var service = new Service('/sockjs');
+        var service = new Service('/service');
+
+        var div  = $('#sock div');
+        var inp  = $('#sock input');
+        var form = $('#sock form');
+        var input = $('#sock input');
+
+        input.click(function() {
+            var i=10;
+            while (i--) {
+                service.call({method:"get"}, print);
+                service.call({method:"add", params:[i,0]}, print);
+            }
+            return false;
+        });
+        
     </script>
     <form action="/service" method="post" enctype="multipart/form-data">
         <input type="text" name="id" placeholder="id" value="2.0" />
