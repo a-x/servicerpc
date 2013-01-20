@@ -20,8 +20,9 @@
     };
 
     var uuid = function() {
+        uuid._salt = uuid._salt || (Math.random()*1000000 | 1);
         uuid._id = +uuid._id || 0;
-        return ++uuid._id + '';
+        return ++uuid._id + '-' + (+new Date) + '-' + uuid._salt;
 
     };
     
@@ -122,10 +123,9 @@
             })
     }
     
-    var Service = module.Service = function(url) {
+    var Service = module.Service = function(url, is) {
         this._url = url || '';
-//        this._transport = new Sock(this._url);
-        this._transport = new Http(this._url);
+        this._transport = is ? new Sock(this._url) : new Http(this._url);
     }
 
     Service.prototype.call = function(req, callback) {

@@ -80,8 +80,8 @@
             return false;
         });
 
-//        var service = new Service('/sockjs');
-        var service = new Service('/service');
+        var ss = new Service('/sockjs', true);
+        var sh = new Service('/service');
 
         var div  = $('#sock div');
         var inp  = $('#sock input');
@@ -89,10 +89,10 @@
         var input = $('#sock input');
 
         input.click(function() {
-            var i=10;
+            var i=1;
             while (i--) {
-                service.call({method:"get"}, print);
-                service.call({method:"add", params:[i,0]}, print);
+                ss.call({method:"get"}, print);
+                sh.call({method:"add", params:[i,0]}, print);
             }
             return false;
         });
