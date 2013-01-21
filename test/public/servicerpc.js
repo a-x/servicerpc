@@ -37,24 +37,12 @@
     
     var Transport = function (url) {
         this._args = {url: url};
-        this._callbacks = {};
         this._init();
     };
 
-    Transport.prototype.send = function(req, callback) {
+    Transport.prototype.send = function(req) {
     };
 
-    Transport.prototype._clearCallbacks = function() {
-        for(var id in this.callbacks) {
-            if (!this._callbacks.hasOwnProperty(id))
-                continue;
-            var callback = this._callbacks[id];
-            if (typeof(callback) === 'function') {
-                callback({ code:-32603, message: 'Internal error' });
-            }
-        }
-        this._callbacks = {}
-    }
 
     var Sock = function(url) {
         Transport.apply(this, arguments);
@@ -63,7 +51,6 @@
     inherits(Sock, Transport);
     
     Sock.prototype._init = function() {
-        this._clearCallbacks();
         var sockjs_url = this._args.url || '/';
         this.sockjs = new SockJS(sockjs_url);
         var self = this;
@@ -81,24 +68,21 @@
             }
             res = (typeof(res) === 'object') ? res : {error: error || { code:-32603, message: 'Internal error' }};
               
-            var callback = res.id && self._callbacks[res.id];
-            callback && callback(res);
-            
+            self.onmessage && self.onmessage(res);
         };
         this.sockjs.onclose   = function()  {
             self._opened = false;
+            self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
             self._init();
         };
         this.sockjs.onerror   = function(e)  {
             self._opened = false;
-            self._init();
+            self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
             alert(e);
         };
     };
     
-    Sock.prototype.send = function(req, callback) {
-//        !this._opened && callback && (callback({error: error || { code:-32603, message: 'Internal error' }));
-        callback && (this._callbacks[req.id] = callback);
+    Sock.prototype.send = function(req) {
         this.sockjs.send(JSON.stringify(req));
     }
     
@@ -109,23 +93,44 @@
     inherits(Http, Transport);
     
     Http.prototype._init = function() {
-        this._clearCallbacks();
     };
     
-    Http.prototype.send = function(req, callback) {
-        callback && (this._callbacks[req.id] = callback);
+    Http.prototype.send = function(req) {
         $.getJSON(this._args.url || '/', req)
             .success(function(res) { 
-                callback && callback(res);
+                self.onmessage && self.onmessage(res);
             })
             .error(function() { 
-                callback && callback({error: { code:-32603, message: 'Internal error' }});
+                self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
             })
     }
     
     var Service = module.Service = function(url, is) {
         this._url = url || '';
+        this._callbacks = {};
+        this._clearCallbacks();
         this._transport = is ? new Sock(this._url) : new Http(this._url);
+        var self = this;
+        this._transport.onmessage = function(res) {
+            res = typeof(res) === 'object' ? res : {error: { code:-32603, message: 'Internal error' }};
+            var callback = res.id && self._callbacks[res.id];
+            callback && callback(res.error, res.result);
+        };
+        this._transport.onerror = function(res) {
+            self._clearCallbacks();
+        };
+    }
+
+    Service.prototype._clearCallbacks = function() {
+        for(var id in this.callbacks) {
+            if (!this._callbacks.hasOwnProperty(id))
+                continue;
+            var callback = this._callbacks[id];
+            if (typeof(callback) === 'function') {
+                callback({ code:-32603, message: 'Internal error' });
+            }
+        }
+        this._callbacks = {}
     }
 
     Service.prototype.call = function(req, callback) {
@@ -135,13 +140,9 @@
         } 
         else {
             callback ? (req.id = uuid()) : (delete(req.id));
+            callback && (this._callbacks[req.id] = callback);
             req.jsonrpc = '2.0';
-            this._transport.send(req, function(res) {
-                res = res || {};
-                var error = res.error,
-                    result = res.result;
-                callback && callback(error, result);                   
-            });
+            this._transport.send(req);
         }
 
 

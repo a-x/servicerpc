@@ -12,3 +12,15 @@ var service = module.exports = {
         fn(null, 'ok');
     }
 };
+
+service.add.description = 'add param to param';
+service.add.returns = 'number';
+service.add.params = [{
+    name: 'aaa',
+    type: 'number',
+    description: 'first param'
+}, {
+    name: 'bbb',
+    type: 'number',
+    description: 'second param'
+}];
