@@ -139,12 +139,10 @@
             case 'SockJS' : 
                 this._transport =  new Sock(this._url);
                 break;
-            case 'HttpGet' : 
-                this._transport =  new HttpGet(this._url);
-                break;
             case 'HttpPost' : 
                 this._transport =  new HttpPost(this._url);
                 break;
+            case 'HttpGet' : 
             default:
                 this._transport =  new HttpGet(this._url);
         }
