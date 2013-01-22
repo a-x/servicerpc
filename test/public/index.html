@@ -64,10 +64,9 @@
         input.click(function() {
             var i=+input.val() || 1;
             while (i--) {
-//                ss.call({method:""}, print);
-                ss.call({method:"echo", params:['ss']}, print);
-                sh.call({method:"echo", params:['sh']}, print);
-                sp.call({method:"echo", params:['sp']}, print);
+                sh("echo")('sh-'+i, print);
+                sp("echo")('sp-'+i, print);
+                ss("echo")('ss-'+i, print);
             }
             return false;
         });

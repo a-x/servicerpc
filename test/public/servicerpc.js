@@ -1,4 +1,4 @@
-(function(module, $) {
+(function(module, $, undefined) {
     "use strict";
 
     var validate = function(req) {
@@ -105,7 +105,6 @@
     };
     
     HttpGet.prototype.send = function(req) {
-        var self = this;
         $.getJSON(this._args.url, req)
             .success(this._onmessage)
             .error(this._onerror);
@@ -113,34 +112,27 @@
     
     // HttpPost transport
     var HttpPost= function(url) {
-        Transport.apply(this, arguments);
+        HttpGet.apply(this, arguments);
     };
 
-    inherits(HttpPost, Transport);
-    
-    HttpPost.prototype._init = function() {
-    };
-    
+    inherits(HttpPost, HttpGet);
+
     HttpPost.prototype.send = function(req) {
-        var self = this;
         $.ajax({
             dataType: "json",
             url: this._args.url,
             data: req,
             type: "POST"
         })
-        .success(function(res) { 
-            self.onmessage && self.onmessage(res);
-        })
-        .error(function() { 
-            self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
-        })
+        .success(this._onmessage)
+        .error(this._onerror);
     }
 
     // Service
     var Service = module.Service = function(url, args) {
         this._args = args || {};
         this._url = url || '';
+        this._methods = {};
         this._callbacks = {};
         this._clearCallbacks();
         switch (this._args.transport) {
@@ -167,6 +159,8 @@
         this._transport.onerror = function(res) {
             self._clearCallbacks();
         };
+        
+        return this.bind();
     }
 
     Service.prototype._clearCallbacks = function() {
@@ -181,7 +175,7 @@
         this._callbacks = {}
     }
 
-    Service.prototype.call = function(req, callback) {
+    Service.prototype._call = function(req, callback) {
         var err = validate(req);
         if (err) {
             callback && callback(err);
@@ -192,8 +186,33 @@
             req.jsonrpc = '2.0';
             this._transport.send(req);
         }
-
-
     }
+
+    Service.prototype.bind = function() {
+        var self = this;
+        return function() {
+            return self.method.apply(self, arguments);
+        };
+    }
+    
+    Service.prototype.method = function(name) {
+        name = name || '';
+        var self = this;
+        
+        this._methods.hasOwnProperty(name) || (this._methods[name] = function () {
+            var args = Array.prototype.slice.call(arguments),
+                callback = args[args.length-1];
+            if (typeof(callback) === 'function') {
+                args.length = args.length-1;
+            } else {
+                callback = undefined;
+            }
+            var req = {method: name};
+            args && (req.params = args);
+            self._call(req, callback);            
+        });
+        return this._methods[name];
+    }
+    
 })( typeof(module) !== 'undefined' && module.exports ? module : this, jQuery );
 /**   MODULE  **/
