@@ -10,6 +10,9 @@ var service = module.exports = {
     },
     get: function(fn) {
         fn(null, 'ok');
+    },
+    echo: function(message, fn) {
+        fn(null, message);
     }
 };
 

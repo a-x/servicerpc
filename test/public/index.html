@@ -39,21 +39,16 @@
     <div id="first" class="box">'{"id":1,"jsonrpc":"2.0","method":"get"}'
       <div></div>
       <form><input autocomplete="off" value="Type here..."></input></form>
-    </div>
-    <div id="sock" class="box">'
-      <div></div>
-      <form><input autocomplete="off" value="Type here..."></input></form>
-        <input type="button" name="jsonrpc" placeholder="jsonrpc" value="2.0" />
+      <input type="button" name="jsonrpc" placeholder="jsonrpc" value="2.0" />
     </div>
 
     <script>
-        var sockjs_url = '/sockjs';
-        var sockjs = new SockJS(sockjs_url);
         $('#first input').focus();
 
         var div  = $('#first div');
         var inp  = $('#first input');
         var form = $('#first form');
+        var input = $('#first input');
 
         var print = function(m, p) {
             p = (p === undefined) ? '' : JSON.stringify(p);
@@ -62,40 +57,17 @@
             div.scrollTop(div.scrollTop()+10000);
         };
 
-        sockjs.onopen    = function()  {print('[*] open', sockjs.protocol);
-//            sockjs.send({id:1, method:'get', jsonrpc:'2.0'});
-//            sockjs.send('{"id":1,"jsonrpc":"2.0","method":"get"}');
-        };
-        sockjs.onmessage = function(e) {print('[.] message', e.data); };
-        sockjs.onclose   = function()  {print('[*] close');};
-        sockjs.onerror   = function(e)  {print('[*] error', e);};
-
-
-        form.submit(function() {
-            print('[ ] sending', inp.val());
-            sockjs.send(inp.val());
-//            sockjs.send(inp.val());
-//            sockjs.send(inp.val());
-            inp.val('1');
-            return false;
-        });
-
-        var ss = new Service('/sockjs', true);
+        var ss = new Service('/sockjs', {transport: "SockJS"});
+        var sp = new Service('/service', {transport: "HttpPost"});
         var sh = new Service('/service');
-//        ss.call({method:""}, print);
-        sh.call({method:""}, print);
-
-        var div  = $('#sock div');
-        var inp  = $('#sock input');
-        var form = $('#sock form');
-        var input = $('#sock input');
 
         input.click(function() {
             var i=+input.val() || 1;
             while (i--) {
-                ss.call({method:""}, print);
-                ss.call({method:"get"}, print);
-                sh.call({method:"add", params:[i,0]}, print);
+//                ss.call({method:""}, print);
+                ss.call({method:"echo", params:['ss']}, print);
+                sh.call({method:"echo", params:['sh']}, print);
+                sp.call({method:"echo", params:['sp']}, print);
             }
             return false;
         });
