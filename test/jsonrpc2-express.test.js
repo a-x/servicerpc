@@ -102,6 +102,7 @@ else {
     server.listen(PORT, HOST, function() {
         console.log("Express server(%d) listening on %s:%d", process.pid, HOST, PORT);
     });
+//    wsrpc(service, {port: 8000})
     wsrpc(service, {server: server})
 //    setTimeout(test, 1000);        
 }

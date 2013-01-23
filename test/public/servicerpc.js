@@ -83,7 +83,7 @@
     };
     
     Sock.prototype.send = function(req) {
-        this.sockjs.send(JSON.stringify(req));
+        this.sockjs.send(JSON.stringify(req), this.sockjs.onerror);
     }
     
     // WebSocket transport

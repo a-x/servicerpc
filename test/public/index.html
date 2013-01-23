@@ -57,7 +57,8 @@
             div.scrollTop(div.scrollTop()+10000);
         };
 
-        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8080', {transport: "WebSocket"});
+        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8000', {transport: "WebSocket"});
+        var ssw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + '/sockjs.websocket', {transport: "WebSocket"});
         var ss = new Service('/sockjs', {transport: "SockJS"});
         var sp = new Service('/service', {transport: "HttpPost"});
         var sh = new Service('/service');
