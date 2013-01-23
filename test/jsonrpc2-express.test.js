@@ -8,6 +8,7 @@ var http = require('http'),
     service = require('./service.test.js'),
     jsonrpc = require('../lib/jsonrpc2-connect'),
     sockrpc = require('../lib/jsonrpc2-sockjs'),
+    wsrpc = require('../lib/jsonrpc2-ws'),
     numCPUs = 1,
     /*require('os').cpus().length*/
     PORT = process.env.OPENSHIFT_INTERNAL_PORT || process.env.PORT || 8080,
@@ -101,6 +102,7 @@ else {
     server.listen(PORT, HOST, function() {
         console.log("Express server(%d) listening on %s:%d", process.pid, HOST, PORT);
     });
+    wsrpc(service, {server: server})
 //    setTimeout(test, 1000);        
 }
 

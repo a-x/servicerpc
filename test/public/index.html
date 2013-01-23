@@ -57,6 +57,7 @@
             div.scrollTop(div.scrollTop()+10000);
         };
 
+        var sw = new Service('ws://jsonrpc2-connect.ax.c9.io:8080/', {transport: "WebSocket"});
         var ss = new Service('/sockjs', {transport: "SockJS"});
         var sp = new Service('/service', {transport: "HttpPost"});
         var sh = new Service('/service');
@@ -67,6 +68,7 @@
                 sh("echo")('sh-'+i, print);
                 sp("echo")('sp-'+i, print);
                 ss("echo")('ss-'+i, print);
+                sw("echo")('ss-'+i, print);
             }
             return false;
         });

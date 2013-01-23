@@ -79,7 +79,6 @@
         this.sockjs.onerror   = function(e)  {
             self._opened = false;
             self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
-            alert(e);
         };
     };
     
@@ -87,6 +86,47 @@
         this.sockjs.send(JSON.stringify(req));
     }
     
+    // WebSocket transport
+    var WSocket= function(url) {
+        Transport.apply(this, arguments);
+    };
+
+    inherits(WSocket, Transport);
+    
+    WSocket.prototype._init = function() {
+        this.ws = new WebSocket(this._args.url);
+        var self = this;
+        this.ws.onopen    = function()  {
+            self._opened = true;
+        };
+        this.ws.onmessage = function(e) {
+            var data = e.data || '',
+                error,
+                res = {};
+            try {
+                res = JSON.parse(data);
+            } catch (err) {
+                error = { code:-32603, message: 'Internal error' };
+            }
+            res = (typeof(res) === 'object') ? res : {error: error || { code:-32603, message: 'Internal error' }};
+              
+            self.onmessage && self.onmessage(res);
+        };
+        this.ws.onclose   = function()  {
+            self._opened = false;
+            self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
+            self._init();
+        };
+        this.ws.onerror   = function(e)  {
+            self._opened = false;
+            self.onerror && self.onerror({error: { code:-32603, message: 'Internal error' }});
+        };
+    };
+    
+    WSocket.prototype.send = function(req) {
+        this.ws.send(JSON.stringify(req));
+    }
+
     // HttpGet transport
     var HttpGet= function(url) {
         Transport.apply(this, arguments);
@@ -138,6 +178,9 @@
         switch (this._args.transport) {
             case 'SockJS' : 
                 this._transport =  new Sock(this._url);
+                break;
+            case 'WebSocket' : 
+                this._transport =  new WSocket(this._url);
                 break;
             case 'HttpPost' : 
                 this._transport =  new HttpPost(this._url);
