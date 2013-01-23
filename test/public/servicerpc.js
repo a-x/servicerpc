@@ -124,7 +124,7 @@
     };
     
     WSocket.prototype.send = function(req) {
-        this.ws.send(JSON.stringify(req));
+        this.ws.send(JSON.stringify(req), this.ws.onerror);
     }
 
     // HttpGet transport

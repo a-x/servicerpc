@@ -57,7 +57,7 @@
             div.scrollTop(div.scrollTop()+10000);
         };
 
-        var sw = new Service('ws://jsonrpc2-connect.ax.c9.io:8080/', {transport: "WebSocket"});
+        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8080', {transport: "WebSocket"});
         var ss = new Service('/sockjs', {transport: "SockJS"});
         var sp = new Service('/service', {transport: "HttpPost"});
         var sh = new Service('/service');
