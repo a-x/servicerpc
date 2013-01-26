@@ -1,6 +1,6 @@
 {
-    "name": "ax.jsonrpc2.connect",
-    "description": "JSON-RPC 2.0 connect middleware",
+    "name": "jsonrpc2",
+    "description": "JSON-RPC 2.0 GET/POST/SockJS/WebSocket middleware",
     "version": "0.10.1",
     "private": true,
     "author": {
