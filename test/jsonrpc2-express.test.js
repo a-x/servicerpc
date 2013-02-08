@@ -8,6 +8,7 @@ var http = require('http'),
     service = require('./service.test.js'),
     jsonrpc = require('../lib/jsonrpc2-connect'),
     sockrpc = require('../lib/jsonrpc2-sockjs'),
+    socketio = require('../lib/jsonrpc2-socket.io'),
     wsrpc = require('../lib/jsonrpc2-ws'),
     numCPUs = 1,
     /*require('os').cpus().length*/
@@ -26,6 +27,7 @@ app.configure(function() {
     }));
     app.use(app.router);
     app.use(express.static(__dirname + '/public'));
+    app.use(express.static(__dirname + '/../lib'));
     app.use(function(err, req, res, next) {
         console.error(err.stack);
         res.send(500, 'Something broke!');
@@ -98,12 +100,13 @@ else {
     // Workers can share any TCP connectionf
     // In this case its a HTTP server
     var server = http.createServer(app);;
-    sockrpc(service).installHandlers(server, {prefix:'/sockjs'});
+    sockrpc(service, {server: server, prefix:'/sockjs'});
     server.listen(PORT, HOST, function() {
         console.log("Express server(%d) listening on %s:%d", process.pid, HOST, PORT);
     });
 //    wsrpc(service, {port: 8000})
-    wsrpc(service, {server: server})
+    wsrpc(service, {server: server});
+    socketio(service, {server: server, prefix:'/socket.io'})
 //    setTimeout(test, 1000);        
 }
 

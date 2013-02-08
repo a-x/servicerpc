@@ -1,0 +1,17 @@
+{
+  "name": "servicerpc",
+  "repo": "a-x/servicerpc",
+  "description": "Ax servicerpc",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "a-x/jquery": "*",
+    "a-x/sockjs": "*"
+  },
+  "main": "lib/servicerpc.js",
+  "scripts": [
+    "lib/servicerpc.js"
+  ],
+  "development": {},
+  "license": "Ax"
+}

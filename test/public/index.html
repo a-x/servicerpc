@@ -2,6 +2,7 @@
 <html><head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="servicerpc.js"></script>
     <style>
       .box {
@@ -57,9 +58,10 @@
             div.scrollTop(div.scrollTop()+10000);
         };
 
-        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8000', {transport: "WebSocket"});
-        var ssw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + '/sockjs.websocket', {transport: "WebSocket"});
+//        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8000', {transport: "WebSocket"});
+//        var ssw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + '/sockjs.websocket', {transport: "WebSocket"});
         var ss = new Service('/sockjs', {transport: "SockJS"});
+        var si = new Service(window.document.location.host + "/socket.io", {transport: "Socket.IO"});
         var sp = new Service('/service', {transport: "HttpPost"});
         var sh = new Service('/service');
 
@@ -68,8 +70,9 @@
             while (i--) {
                 sh("echo")('sh-'+i, print);
                 sp("echo")('sp-'+i, print);
+//                sw("echo")('sw-'+i, print);
                 ss("echo")('ss-'+i, print);
-                sw("echo")('ss-'+i, print);
+                si("echo")('si-'+i, print);
             }
             return false;
         });
