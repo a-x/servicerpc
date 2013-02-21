@@ -15,6 +15,9 @@ rpc = new rpc({
     max: function(a, b, fn) {
         fn(null, a > b ? a : b);
     },
+    put: function(a, fn) {
+        fn(null, a.length);
+    },
     get: function(fn) {
         fn(null, 'ok');
     }
@@ -120,7 +123,8 @@ vows.describe('JSON-RPC').addBatch({
         '7': testTopic('{"jsonrpc":"2.0", "id":1, "method":"sub", "params": [10,2]}', 8),
         '8': testTopic('{"jsonrpc":"2.0", "id":1, "method":"sub", "params": [2,10]}', -8),
         '9': testTopic('{"jsonrpc":"2.0", "id":1, "method":"sub", "params": {"a":10,"b":3}}', 7),
-        '10': testTopic('{"jsonrpc":"2.0", "id":1, "method":"sub", "params": {"b":3,"a":10}}', 7)
+        '10': testTopic('{"jsonrpc":"2.0", "id":1, "method":"sub", "params": {"b":3,"a":10}}', 7),
+        '11': testTopic('{"jsonrpc":"2.0", "id":1, "method":"put", "params": [[1]]}', 1)
     },
     'BATCH': {
         '1': testTopic('[{"jsonrpc":"2.0", "id":1, "method":"get"},{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": 1}]', function(res) {

@@ -60,10 +60,10 @@
 
 //        var sw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + ':8000', {transport: "WebSocket"});
 //        var ssw = new Service('ws://' + window.document.location.host.replace(/:.*/, '') + '/sockjs.websocket', {transport: "WebSocket"});
-        var ss = new Service('/sockjs', {transport: "SockJS"});
-        var si = new Service(window.document.location.host + "/socket.io", {transport: "Socket.IO"});
-        var sp = new Service('/service', {transport: "HttpPost"});
-        var sh = new Service('/service');
+        var ss = new Service({url: '/sockjs', transport: "SockJS"});
+        var si = new Service({url: window.document.location.host + "/socket.io", transport: "Socket.IO"});
+        var sp = new Service({url: '/service'});
+        var sh = new Service({url: '/service', transport: "GET"});
 
         input.click(function() {
             var i=+input.val() || 1;
