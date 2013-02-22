@@ -5,7 +5,7 @@ var http = require('http'),
     express = require('express'),
     app = express(),
     cluster = require('cluster'),
-    service = require('./service.test.js'),
+    service = require('./api/service.js'),
     jsonrpc = require('../lib/jsonrpc2-connect'),
     sockrpc = require('../lib/jsonrpc2-sockjs'),
     socketio = require('../lib/jsonrpc2-socket.io'),
@@ -39,10 +39,12 @@ app.configure('development', function() {
 });
 
 var rpc = jsonrpc(service);
-app.all('/service', function (req, res, next) {
-    console.log(process.memoryUsage());
-    rpc(req, res, next);
-});
+//app.all('/service', function (req, res, next) {
+//    console.log(process.memoryUsage());
+//    rpc(req, res, next);
+//});
+console.log(__dirname +'/api')
+jsonrpc.applyDir({dir: __dirname +'/api', app: app});
 
 var test = function() {
     var options = {
